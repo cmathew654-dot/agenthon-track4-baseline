@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.env
+submission*.json
+submission*.zip
+team-claim.json
