@@ -1,5 +1,4 @@
-# Draft only. Place at .github/workflows/publish.yml in the approved new repository.
-name: Publish approved baseline
+name: Publish baseline
 on:
   workflow_dispatch:
 permissions:
@@ -17,21 +16,21 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
-      - name: Build approved public source
+      - name: Build image
         run: >-
           docker build --platform linux/amd64
           --label org.opencontainers.image.source=https://github.com/cmathew654-dot/agenthon-track4-baseline
           --label org.opencontainers.image.revision=${{ github.sha }}
           --label 'org.opencontainers.image.description=Model-free Track 4 packaging baseline with manifest-bound entity citations'
           --tag "$IMAGE" .
-      - name: Publish through temporary workflow authorization
+      - name: Push image
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           export DOCKER_CONFIG="$RUNNER_TEMP/agenthon-docker"
           printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username cmathew654-dot --password-stdin
           docker push "$IMAGE"
-      - name: Clear runner-local registry login
+      - name: Log out of registry
         if: always()
         run: |
           export DOCKER_CONFIG="$RUNNER_TEMP/agenthon-docker"
