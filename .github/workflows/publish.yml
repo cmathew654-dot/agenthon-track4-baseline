@@ -13,7 +13,6 @@ jobs:
       packages: write
     env:
       IMAGE: ghcr.io/cmathew654-dot/agenthon-track4-baseline:dev-smoke-20261013
-      DOCKER_CONFIG: ${{ runner.temp }}/agenthon-docker
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
@@ -29,8 +28,11 @@ jobs:
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          export DOCKER_CONFIG="$RUNNER_TEMP/agenthon-docker"
           printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username cmathew654-dot --password-stdin
           docker push "$IMAGE"
       - name: Clear runner-local registry login
         if: always()
-        run: docker logout ghcr.io
+        run: |
+          export DOCKER_CONFIG="$RUNNER_TEMP/agenthon-docker"
+          docker logout ghcr.io
